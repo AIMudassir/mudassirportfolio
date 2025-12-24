@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syed Muhammad Mudassir | AI & Biometrics</title>
+    
+    <!-- External Dependencies -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@19/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@19/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --theme-accent: #06b6d4;
+            --theme-accent-glow: rgba(6, 182, 212, 0.4);
+            --apple-ease: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000;
+            color: #fff;
+            overflow-x: hidden;
+            cursor: none;
+        }
+        .font-heading {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #222; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #333; }
+
+        /* Custom Theme Classes */
+        .theme-cyber { --theme-accent: #00f2ff; --theme-accent-glow: rgba(0, 242, 255, 0.4); }
+        .theme-nova { --theme-accent: #ff4d4d; --theme-accent-glow: rgba(255, 77, 77, 0.4); }
+        .theme-void { --theme-accent: #ffffff; --theme-accent-glow: rgba(255, 255, 255, 0.2); }
+        .theme-nebula { --theme-accent: #aa00ff; --theme-accent-glow: rgba(170, 0, 255, 0.4); }
+
+        @keyframes pulse-blue-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(6, 182, 212, 0.1); }
+            50% { box-shadow: 0 0 35px var(--theme-accent-glow); }
+        }
+        .animate-project-glow { animation: pulse-blue-glow 2.5s infinite ease-in-out; }
+        .theme-btn-clip { clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%); }
+        .reveal-node { 
+            opacity: 0; 
+            transform: translateY(24px); 
+            transition: transform 1.2s var(--apple-ease), opacity 1.2s var(--apple-ease); 
+            will-change: transform, opacity; 
+        }
+        .reveal-node.active { opacity: 1; transform: translateY(0); }
+        .hover-card-effect { transition: all 0.7s var(--apple-ease); will-change: transform; }
+        .hover-card-effect:hover { transform: translateY(-10px); }
+        
+        input[type=range].density-slider { -webkit-appearance: none; background: transparent; }
+        input[type=range].density-slider::-webkit-slider-runnable-track { height: 2px; background: rgba(255, 255, 255, 0.1); }
+        input[type=range].density-slider::-webkit-slider-thumb { 
+            -webkit-appearance: none; height: 12px; width: 12px; border-radius: 50%; 
+            background: var(--theme-accent); margin-top: -5px; box-shadow: 0 0 10px var(--theme-accent); cursor: pointer; 
+        }
+
+        @keyframes scan-move {
+            0% { transform: translate(-50%, -100%); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translate(-50%, 200%); opacity: 0; }
+        }
+        .animate-scan-line { animation: scan-move 4s linear infinite; will-change: transform; }
+        
+        @keyframes reveal { to { opacity: 1; transform: translateY(0); } }
+        .reveal-text { opacity: 0; transform: translateY(20px); animation: reveal 1.2s var(--apple-ease) forwards; }
+
+        @media (max-width: 1024px) {
+            body { cursor: auto; }
+            .custom-cursor-container { display: none; }
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef, memo, useCallback } = React;
+
+        // --- CONSTANTS ---
+        const PROJECTS = [
+            {
+                title: "Synthetic Face Generation for Drug Abuse Detection",
+                description: "Co-developed an AI system using BLIP, CLIP, and OpenCV for generating intelligent prompts from images to detect drug abuse indicators.",
+                tags: ["SDXL", "LoRA", "PyTorch", "OpenCV"],
+                date: "2025 - Present"
+            },
+            {
+                title: "Environmental Data Processing",
+                description: "Built a system to analyze air quality and Sentinel-2 imagery using MySQL, FFT, and image processing for pollution detection.",
+                tags: ["Python", "MySQL", "FFT", "Image Processing"],
+                date: "2024 - 2025"
+            },
+            {
+                title: "Sketch-to-Image Generation",
+                description: "A diffusion-based pipeline that converts hand-drawn sketches into realistic images, deployed as an interactive Gradio app.",
+                tags: ["Diffusion Models", "Gradio", "Generative AI"],
+                date: "2022"
+            },
+            {
+                title: "Data Visualization using Tableau",
+                description: "Analyzed complex datasets and created informative interactive dashboards for data-driven organizational insights.",
+                tags: ["Tableau", "Data Analysis", "SQL"],
+                date: "2021"
+            }
+        ];
+
+        const SKILLS = [
+            {
+                category: "AI & ML",
+                skills: [
+                    { name: "Stable Diffusion", description: "Image synthesis & generative art models." },
+                    { name: "PyTorch", description: "Developing complex neural architectures." },
+                    { name: "LLMs", description: "Prompt engineering & RAG pipelines." },
+                    { name: "Generative AI", description: "Synthetic data & content generation." },
+                    { name: "Computer Vision", description: "Object detection & facial biometrics." }
+                ]
+            },
+            {
+                category: "Programming",
+                skills: [
+                    { name: "Python", description: "Primary logic for AI/ML development." },
+                    { name: "C++", description: "Performance-critical system components." },
+                    { name: "JavaScript", description: "Interactive frontend & biometric UI." },
+                    { name: "SQL", description: "Relational database architecture." },
+                    { name: "Java", description: "Enterprise-grade backend logic." }
+                ]
+            },
+            {
+                category: "Data Tools",
+                skills: [
+                    { name: "Tableau", description: "Interactive business intelligence." },
+                    { name: "Power BI", description: "Advanced KPI reporting & dashboarding." },
+                    { name: "Excel Pivot", description: "Quick data aggregation & analysis." },
+                    { name: "Pandas", description: "Data manipulation & preprocessing." },
+                    { name: "NumPy", description: "Scientific computing & matrix operations." }
+                ]
+            }
+        ];
+
+        // --- COMPONENTS ---
+
+        const Navbar = () => {
+            const [isMenuOpen, setIsMenuOpen] = useState(false);
+            const navLinks = [
+                { name: 'Projects', href: '#projects' },
+                { name: 'Core_Matrix', href: '#skills' },
+                { name: 'Interface', href: '#contact' },
+            ];
+
+            const handleLinkClick = (e, href) => {
+                e.preventDefault();
+                setIsMenuOpen(false);
+                const targetId = href.replace('#', '');
+                const element = document.getElementById(targetId);
+                if (element) {
+                    window.scrollTo({ top: element.offsetTop - 80, behavior: 'smooth' });
+                }
+            };
+
+            return (
+                <nav className="fixed top-0 left-0 right-0 z-[100] px-6 md:px-12 py-5 md:py-6 flex justify-between items-center backdrop-blur-xl border-b border-white/5 bg-black/20">
+                    <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                        <div className="w-2 h-2 bg-cyan-500 shadow-[0_0_10px_#00f2ff]" />
+                        <span className="font-heading font-black text-lg md:text-xl tracking-tighter">SMM.TECH</span>
+                    </div>
+                    <div className="hidden md:flex gap-12 text-[10px] font-mono font-bold tracking-[0.3em] uppercase text-zinc-500">
+                        {navLinks.map((link) => (
+                            <a key={link.name} href={link.href} onClick={(e) => handleLinkClick(e, link.href)} className="hover:text-cyan-400 transition-colors">{link.name}</a>
+                        ))}
+                    </div>
+                    <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden flex flex-col gap-1.5 p-2 z-[110]">
+                        <div className={`w-6 h-[1px] bg-white transition-all ${isMenuOpen ? 'rotate-45 translate-y-[7px]' : ''}`} />
+                        <div className={`w-6 h-[1px] bg-white transition-all ${isMenuOpen ? 'opacity-0' : ''}`} />
+                        <div className={`w-6 h-[1px] bg-white transition-all ${isMenuOpen ? '-rotate-45 -translate-y-[7px]' : ''}`} />
+                    </button>
+                    {isMenuOpen && (
+                        <div className="fixed inset-0 bg-black/95 backdrop-blur-2xl flex flex-col items-center justify-center gap-12 md:hidden">
+                            {navLinks.map((link) => (
+                                <a key={link.name} href={link.href} onClick={(e) => handleLinkClick(e, link.href)} className="text-4xl font-heading font-black tracking-tighter hover:text-cyan-400 transition-colors">{link.name.replace('_', ' ')}</a>
+                            ))}
+                        </div>
+                    )}
+                </nav>
+            );
+        };
+
+        const Hero = memo(() => {
+            return (
+                <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden pt-20">
+                    <div className="max-w-6xl relative w-full">
+                        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[1px] h-64 bg-gradient-to-b from-transparent via-cyan-500 to-transparent animate-scan-line" style={{ backgroundColor: 'var(--theme-accent)' }} />
+                        <h2 className="text-cyan-500 font-mono text-[8px] md:text-[10px] tracking-[0.4em] md:tracking-[0.6em] uppercase mb-6 md:mb-8 opacity-60 reveal-text" style={{ animationDelay: '0.1s', color: 'var(--theme-accent)' }}>Neural Interface Engineering</h2>
+                        <h1 className="text-5xl md:text-9xl font-heading font-black tracking-tighter leading-[0.9] md:leading-[0.8] mb-8 md:mb-10 reveal-text" style={{ animationDelay: '0.2s' }}>SYED<br /><span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-600">MUDASSIR</span></h1>
+                        <p className="text-base md:text-2xl text-zinc-400 max-w-2xl mx-auto font-light leading-relaxed mb-12 md:text-xl md:mb-16 tracking-tight reveal-text px-4" style={{ animationDelay: '0.3s' }}>Pioneering <span className="text-white font-medium">Synthetic Face Analysis</span> and AI Biometrics at Université Paris-Est Créteil.</p>
+                        <div className="flex flex-col sm:flex-row gap-4 md:gap-6 items-center justify-center reveal-text" style={{ animationDelay: '0.4s' }}>
+                            <a href="mailto:mudassirfrance@gmail.com" className="w-full sm:w-auto px-10 py-4 md:py-5 bg-white text-black font-heading font-bold text-[10px] md:text-xs uppercase tracking-[0.2em] rounded-full hover:bg-cyan-500 hover:text-white transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.1)]">Email Signal</a>
+                            <a href="https://www.linkedin.com/in/syed-muhammad-mudassir-b81314211/?skipRedirect=true" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto px-10 py-4 md:py-5 bg-transparent border border-white/20 text-white font-heading font-bold text-[10px] md:text-xs uppercase tracking-[0.2em] rounded-full hover:bg-white/10 transition-all">LinkedIn Auth</a>
+                        </div>
+                    </div>
+                </section>
+            );
+        });
+
+        const CustomCursor = memo(() => {
+            const cursorRef = useRef(null);
+            const ringRef = useRef(null);
+            const mousePos = useRef({ x: 0, y: 0 });
+            const ringPos = useRef({ x: 0, y: 0 });
+            const [isHovering, setIsHovering] = useState(false);
+            const [isVisible, setIsVisible] = useState(false);
+
+            useEffect(() => {
+                const onMouseMove = (e) => {
+                    mousePos.current = { x: e.clientX, y: e.clientY };
+                    if (!isVisible) setIsVisible(true);
+                    if (cursorRef.current) cursorRef.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+                };
+                const onMouseOver = (e) => setIsHovering(!!e.target.closest('button, a, .cursor-pointer'));
+                window.addEventListener('mousemove', onMouseMove, { passive: true });
+                window.addEventListener('mouseover', onMouseOver);
+                
+                let animationFrameId;
+                const render = () => {
+                    ringPos.current.x += (mousePos.current.x - ringPos.current.x) * 0.08;
+                    ringPos.current.y += (mousePos.current.y - ringPos.current.y) * 0.08;
+                    if (ringRef.current) ringRef.current.style.transform = `translate3d(${ringPos.current.x}px, ${ringPos.current.y}px, 0) translate(-50%, -50%)`;
+                    animationFrameId = requestAnimationFrame(render);
+                };
+                render();
+                return () => {
+                    window.removeEventListener('mousemove', onMouseMove);
+                    window.removeEventListener('mouseover', onMouseOver);
+                    cancelAnimationFrame(animationFrameId);
+                };
+            }, [isVisible]);
+
+            if (!isVisible) return null;
+            return (
+                <div className="custom-cursor-container fixed inset-0 pointer-events-none z-[999] overflow-hidden">
+                    <div ref={ringRef} className={`fixed top-0 left-0 w-10 h-10 border-[4px] border-cyan-500/30 shadow-[0_0_45px_rgba(6,182,212,0.2)] rounded-full transition-all duration-300 ease-out flex items-center justify-center ${isHovering ? 'scale-[2.4] bg-cyan-500/10 border-cyan-400' : 'scale-100'}`} style={{ mixBlendMode: 'screen' }}>
+                        {isHovering && <div className="w-2 h-2 bg-cyan-400 rounded-full animate-ping" />}
+                    </div>
+                    <div ref={cursorRef} className="fixed top-0 left-0 w-1.5 h-1.5 bg-white rounded-full -translate-x-1/2 -translate-y-1/2 shadow-[0_0_15px_white]" style={{ mixBlendMode: 'difference' }} />
+                </div>
+            );
+        });
+
+        const NeuralNetworkBackground = memo(({ activeTheme = 'CYBER', densityFactor = 1.0 }) => {
+            const canvasRef = useRef(null);
+            const themes = {
+                CYBER: { nodeColor: '#00f2ff', edgeColor: 'rgba(0, 242, 255, 0.12)', pulseColor: '#ffffff', bgGradient: ['#000000', '#000510'] },
+                NOVA: { nodeColor: '#ff4d4d', edgeColor: 'rgba(255, 77, 77, 0.12)', pulseColor: '#ffaa00', bgGradient: ['#000000', '#100500'] },
+                VOID: { nodeColor: '#888888', edgeColor: 'rgba(255, 255, 255, 0.05)', pulseColor: '#ffffff', bgGradient: ['#000000', '#050505'] },
+                NEBULA: { nodeColor: '#aa00ff', edgeColor: 'rgba(170, 0, 255, 0.12)', pulseColor: '#00ffaa', bgGradient: ['#020005', '#000000'] }
+            };
+
+            useEffect(() => {
+                const canvas = canvasRef.current;
+                const ctx = canvas.getContext('2d');
+                let nodes = [], animationFrameId;
+                const density = densityFactor;
+
+                const init = () => {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                    nodes = Array.from({ length: Math.floor(150 * density) }, () => ({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        vx: (Math.random() - 0.5) * 0.5,
+                        vy: (Math.random() - 0.5) * 0.5,
+                        radius: Math.random() * 1.5 + 0.5
+                    }));
+                };
+
+                const draw = () => {
+                    const theme = themes[activeTheme];
+                    ctx.fillStyle = theme.bgGradient[0];
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    ctx.strokeStyle = theme.edgeColor;
+                    ctx.lineWidth = 0.5;
+                    ctx.beginPath();
+                    for (let i = 0; i < nodes.length; i++) {
+                        for (let j = i + 1; j < nodes.length; j++) {
+                            const dx = nodes[i].x - nodes[j].x;
+                            const dy = nodes[i].y - nodes[j].y;
+                            if (dx*dx + dy*dy < 150*150) {
+                                ctx.moveTo(nodes[i].x, nodes[i].y);
+                                ctx.lineTo(nodes[j].x, nodes[j].y);
+                            }
+                        }
+                    }
+                    ctx.stroke();
+
+                    ctx.fillStyle = theme.nodeColor;
+                    nodes.forEach(n => {
+                        n.x += n.vx; n.y += n.vy;
+                        if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
+                        if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+                        ctx.beginPath();
+                        ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+                        ctx.fill();
+                    });
+                    animationFrameId = requestAnimationFrame(draw);
+                };
+
+                window.addEventListener('resize', init);
+                init(); draw();
+                return () => { cancelAnimationFrame(animationFrameId); window.removeEventListener('resize', init); };
+            }, [activeTheme, densityFactor]);
+
+            return <canvas ref={canvasRef} className="fixed inset-0 z-0 bg-black pointer-events-none" />;
+        });
+
+        // --- APP MAIN ---
+
+        const App = () => {
+            const [activeTheme, setActiveTheme] = useState('CYBER');
+            const [density, setDensity] = useState(1.0);
+            const [skillsInView, setSkillsInView] = useState(false);
+            const skillsRef = useRef(null);
+
+            useEffect(() => {
+                const observer = new IntersectionObserver(([entry]) => entry.isIntersecting && setSkillsInView(true), { threshold: 0.1 });
+                if (skillsRef.current) observer.observe(skillsRef.current);
+                return () => observer.disconnect();
+            }, []);
+
+            return (
+                <div className={`min-h-screen text-white selection:bg-cyan-500/30 font-sans transition-colors duration-1000 theme-${activeTheme.toLowerCase()}`}>
+                    <CustomCursor />
+                    <NeuralNetworkBackground activeTheme={activeTheme} densityFactor={density} />
+                    <Navbar />
+
+                    <div className="fixed bottom-6 left-6 md:bottom-8 md:left-8 z-[100] flex flex-col items-start gap-4">
+                        <div className="bg-black/60 backdrop-blur-md border border-white/10 p-4 rounded-xl flex flex-col gap-3 min-w-[200px] shadow-2xl">
+                            <div className="flex justify-between items-center text-[8px] font-mono tracking-widest text-zinc-500 uppercase">
+                                <span>Core: <span className="text-cyan-400" style={{ color: 'var(--theme-accent)' }}>{activeTheme}</span></span>
+                                <span className="opacity-40">STABLE</span>
+                            </div>
+                            <div className="flex flex-col gap-1.5">
+                                <div className="flex justify-between text-[7px] font-mono text-zinc-500 uppercase">
+                                    <span>Synapse_Density</span>
+                                    <span className="text-cyan-400" style={{ color: 'var(--theme-accent)' }}>{density.toFixed(1)}x</span>
+                                </div>
+                                <input type="range" min="0.2" max="2.5" step="0.1" value={density} onChange={(e) => setDensity(parseFloat(e.target.value))} className="density-slider w-full" />
+                            </div>
+                        </div>
+                        <button onClick={() => {
+                            const list = ['CYBER', 'NOVA', 'VOID', 'NEBULA'];
+                            setActiveTheme(list[(list.indexOf(activeTheme) + 1) % list.length]);
+                        }} className="group relative px-8 py-3 bg-zinc-900/90 border border-white/10 hover:border-cyan-500/50 transition-all duration-500 theme-btn-clip overflow-hidden">
+                            <div className="absolute inset-0 bg-cyan-500/10 scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]" style={{ background: 'var(--theme-accent-glow)' }} />
+                            <span className="relative z-10 font-heading text-[10px] font-bold tracking-[0.2em] uppercase flex items-center gap-2">REWIRE_NET</span>
+                        </button>
+                    </div>
+
+                    <main className="relative z-10">
+                        <Hero />
+                        
+                        <section id="projects" className="py-20 md:py-32 px-6 scroll-mt-24">
+                            <div className="max-w-6xl mx-auto">
+                                <div className="mb-12 md:mb-20">
+                                    <h2 className="text-4xl md:text-7xl font-heading font-black tracking-tighter mb-4">SYSTEM_LOGS</h2>
+                                    <div className="h-1 w-16 md:w-24 bg-cyan-500" style={{ background: 'var(--theme-accent)' }} />
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+                                    {PROJECTS.map((project, idx) => (
+                                        <div key={idx} className="group relative p-8 md:p-10 rounded-[1.5rem] md:rounded-[2rem] bg-zinc-900/60 backdrop-blur-md border border-white/5 hover-card-effect cursor-pointer">
+                                            <div className="absolute top-4 right-6 text-[8px] md:text-[10px] font-mono text-zinc-600 tracking-widest">{project.date}</div>
+                                            <h3 className="text-2xl md:text-3xl font-heading font-bold mb-4 group-hover:text-cyan-400 transition-colors">{project.title}</h3>
+                                            <p className="text-zinc-400 text-xs md:text-sm mb-8">{project.description}</p>
+                                            <div className="flex flex-wrap gap-2">
+                                                {project.tags.map(tag => <span key={tag} className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[8px] font-bold uppercase text-cyan-400/80">{tag}</span>)}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </section>
+
+                        <section ref={skillsRef} id="skills" className="py-20 md:py-32 px-6 scroll-mt-24">
+                            <div className="max-w-6xl mx-auto">
+                                <div className={`mb-16 md:mb-24 reveal-node ${skillsInView ? 'active' : ''}`}>
+                                    <h2 className="text-4xl md:text-7xl font-heading font-black tracking-tighter mb-4">CORE_MATRIX</h2>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+                                    {SKILLS.map((cat, idx) => (
+                                        <div key={idx} className={`bg-zinc-900/40 backdrop-blur-md p-8 md:p-10 rounded-[2.5rem] border border-white/5 transition-all duration-700 reveal-node ${skillsInView ? 'active' : ''}`} style={{ transitionDelay: `${idx * 150}ms` }}>
+                                            <h4 className="text-white font-heading font-bold text-xl uppercase tracking-widest mb-10 flex items-center gap-3">
+                                                <span className="w-6 h-6 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-500 text-[10px]" style={{ color: 'var(--theme-accent)' }}>{idx + 1}</span>
+                                                {cat.category}
+                                            </h4>
+                                            <div className="space-y-8">
+                                                {cat.skills.map((skill, sIdx) => (
+                                                    <div key={sIdx} className="group/skill">
+                                                        <span className="block text-lg font-heading font-bold text-zinc-100 group-hover/skill:text-cyan-400 transition-colors">{skill.name}</span>
+                                                        <span className="block text-[10px] font-mono text-zinc-400 opacity-70">{skill.description}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </section>
+
+                        <footer id="contact" className="py-20 md:py-32 px-6 text-center border-t border-white/5 relative group/footer">
+                            <div className="max-w-4xl mx-auto relative z-10">
+                                <h2 className="text-5xl md:text-8xl font-heading font-black mb-12 tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-700 group-hover/footer:to-cyan-400 transition-all duration-1000">LET'S INTERFACE</h2>
+                                <div className="flex flex-col sm:flex-row justify-center items-center gap-12 mb-20">
+                                    <a href="mailto:mudassirfrance@gmail.com" className="text-lg md:text-2xl font-heading font-bold text-zinc-400 hover:text-white transition-colors duration-300">mudassirfrance@gmail.com</a>
+                                    <a href="https://www.linkedin.com/in/syed-muhammad-mudassir-b81314211/?skipRedirect=true" target="_blank" rel="noopener noreferrer" className="text-lg md:text-2xl font-heading font-bold text-zinc-400 hover:text-white transition-colors duration-300">LinkedIn_Signal</a>
+                                </div>
+                            </div>
+                        </footer>
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
